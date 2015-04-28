@@ -23,17 +23,8 @@ object Messages extends BridgeProtocol {
       registry.addObj(obj)
     }
 
-    add[Api.DeleteTodo]
-    add[Api.TodoDeleted]
-    add[Api.UpdateTodo]
-    addObj(Api.SubscribeToTodos)
-    add[Api.GetMotd]
-    add[Api.GotMotd]
-    add[Api.TodosChanged]
-
-    addObj(CommentsApi.SubscribeToComments)
-    add[CommentsApi.UpdatedComments]
-    add[CommentsApi.AddComment]
+    addObj(ServerTime.Subscribe)
+    add[ServerTime.ServerTime]
   }
 
 }

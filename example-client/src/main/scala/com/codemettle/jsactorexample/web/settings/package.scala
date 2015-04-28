@@ -7,5 +7,5 @@ import scala.scalajs.js
  *
  */
 package object settings extends js.GlobalScope {
-  val appSettings: AppSettings = js.native
+  val wsUrl: String = js.native
 }
