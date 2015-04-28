@@ -1,0 +1,22 @@
+body {
+    padding-top: 70px;
+    padding-bottom: 30px;
+}
+
+.label-as-badge {
+    border-radius: 1em;
+}
+
+.theme-dropdown .dropdown-menu {
+    position: static;
+    display: block;
+    margin-bottom: 20px;
+}
+
+.theme-showcase > div > p > .btn {
+    margin: 5px 0;
+}
+
+.theme-showcase .navbar .container {
+    width: auto;
+}
