@@ -1,5 +1,6 @@
 package com.codemettle.jsactorexample.web.services
 
+import jsactor.bridge.client.WebSocketManager
 import jsactor.bridge.client.util.RemoteActorListener
 import jsactor.{JsActorRef, JsProps}
 import rx._
@@ -13,7 +14,7 @@ import com.codemettle.jsactorexample.web.shared.{Api, TodoItem}
  *
  */
 object TodoStore {
-  def props(wsManager: JsActorRef) = {
+  def props(wsManager: WebSocketManager) = {
     JsProps(new TodoStore(wsManager))
   }
 
@@ -28,8 +29,10 @@ object TodoStore {
   def todos: Rx[Seq[TodoItem]] = _items
 }
 
-class TodoStore(val wsManager: JsActorRef) extends RemoteActorListener {
+class TodoStore(wsManager: WebSocketManager) extends RemoteActorListener {
   override def actorPath = "/user/SPAService"
+
+  override def webSocketManager: WebSocketManager = wsManager
 
   override def onConnect(serverActor: JsActorRef): Unit = {
     serverActor ! Api.SubscribeToTodos

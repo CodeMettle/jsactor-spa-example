@@ -4,7 +4,7 @@ package web.services
 import com.github.pimterry.loglevel.LogLevel
 import japgolly.scalajs.react.React
 import jsactor.JsActorSystem
-import jsactor.bridge.client.SocketManager
+import jsactor.bridge.client.{WebSocketManager, SocketManager}
 import jsactor.logging.impl.JsLoglevelActorLoggerFactory
 import org.querki.jquery._
 import org.scalajs.dom
@@ -22,8 +22,10 @@ object Application {
   val actorSystem = JsActorSystem("Example", JsLoglevelActorLoggerFactory)
 
   val wsManager = {
-    implicit val protocol = Messages
-    actorSystem.actorOf(SocketManager.props(SocketManager.Config(settings.appSettings.webSocketUrl)), "socketManager")
+    implicit def protocol = Messages
+    implicit def system = actorSystem
+
+    new WebSocketManager(SocketManager.Config(settings.appSettings.webSocketUrl))
   }
 
   val todoStore = actorSystem.actorOf(TodoStore.props(wsManager), "todoStore")

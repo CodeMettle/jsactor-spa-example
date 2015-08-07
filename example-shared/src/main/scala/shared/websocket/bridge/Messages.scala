@@ -1,10 +1,9 @@
 package shared.websocket.bridge
 
+import com.codemettle.jsactorexample.web.shared._
 import jsactor.bridge.protocol.BridgeProtocol
 import jsactor.bridge.protocol.BridgeProtocol.MessageRegistry
-import upickle._
-
-import com.codemettle.jsactorexample.web.shared._
+import upickle.default._
 
 import scala.reflect.ClassTag
 

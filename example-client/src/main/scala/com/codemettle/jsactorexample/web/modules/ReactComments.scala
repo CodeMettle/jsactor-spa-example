@@ -2,6 +2,7 @@ package com.codemettle.jsactorexample.web.modules
 
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.prefix_<^._
+import jsactor.bridge.client.WebSocketManager
 import jsactor.bridge.client.util.RemoteActorListener
 import jsactor.logging.JsActorLogging
 import jsactor.{JsPoisonPill, JsActorRef, JsProps}
@@ -48,7 +49,7 @@ object CommentBox {
       log.info("Comments actor stopped")
     }
 
-    override def wsManager: JsActorRef = Application.wsManager
+    override def webSocketManager: WebSocketManager = Application.wsManager
 
     override def actorPath: String = "/user/CommentService"
 
@@ -100,7 +101,7 @@ object CommentList {
     .noBackend
     .render((P, _, _) ⇒ {
       val commentNodes = P.data map (comment ⇒ {
-        Comment(author = comment.author)(comment.text)
+        CommentDisplay(author = comment.author)(comment.text)
       })
 
       <.div(^.className := "commentList")(commentNodes)
@@ -144,7 +145,7 @@ object CommentForm {
   def apply(onCommentSubmit: (CommentsApi.Comment) ⇒ Unit) = component(Props(onCommentSubmit))
 }
 
-object Comment {
+object CommentDisplay {
   val converter = new Showdown.converter
 
   case class Props(author: String)
