@@ -6,6 +6,8 @@ import scala.scalajs.js
  * @author steven
  *
  */
-package object settings extends js.GlobalScope {
+@js.annotation.JSGlobalScope
+@js.native
+object settings extends js.Object {
   val wsUrl: String = js.native
 }

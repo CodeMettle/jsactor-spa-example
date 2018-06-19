@@ -2,24 +2,28 @@ package controllers
 
 import java.util.Date
 
-import akka.actor.{Terminated, Actor, ActorRef, Props}
-import com.codemettle.jsactorexample.web.shared.ServerTime
-import jsactor.bridge.server.ServerBridgeActor
-import play.api.libs.concurrent.Akka
+import javax.inject.{Inject, Singleton}
+import play.api.libs.streams.ActorFlow
 import play.api.mvc._
 import shared.websocket.bridge.Messages
 
+import com.codemettle.jsactorexample.web.shared.ServerTime
+
+import akka.actor.{Actor, ActorRef, ActorSystem, Props, Terminated}
+import akka.stream.Materializer
+import jsactor.bridge.protocol.UPickleBridgeProtocol
+import jsactor.bridge.server.UPickleServerBridgeActor
 import scala.concurrent.duration._
 
-object Application extends Controller {
-  import play.api.Play.current
+@Singleton
+class Application @Inject()(cc: ControllerComponents)(implicit actSys: ActorSystem, mat: Materializer) extends AbstractController(cc) {
 
-  val serverTime = Akka.system.actorOf(Props(new Actor {
+  actSys.actorOf(Props(new Actor {
     import context.dispatcher
 
     private var subscribers = Set.empty[ActorRef]
 
-    val timer = context.system.scheduler.schedule(1.second, 1.second, self, 'tick)
+    private val timer = context.system.scheduler.schedule(1.second, 1.second, self, 'tick)
 
     override def postStop(): Unit = {
       super.postStop()
@@ -27,7 +31,7 @@ object Application extends Controller {
       timer.cancel()
     }
 
-    def receive = {
+    override def receive: Receive = {
       case ServerTime.Subscribe ⇒
         context watch sender()
         subscribers += sender()
@@ -45,8 +49,8 @@ object Application extends Controller {
     Ok(views.html.index())
   }
 
-  def ws = WebSocket.acceptWithActor[String, String] { req ⇒ websocket ⇒
-    implicit val protocol = Messages
-    ServerBridgeActor.props(websocket)
+  def ws = WebSocket.accept[String, String] { implicit req ⇒
+    implicit val msgs: UPickleBridgeProtocol = Messages
+    ActorFlow.actorRef(UPickleServerBridgeActor.props)
   }
 }
